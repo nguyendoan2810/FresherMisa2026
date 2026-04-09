@@ -4,12 +4,18 @@ using System.Text;
 
 namespace FresherMisa2026.Entities
 {
+    [AttributeUsage(AttributeTargets.Property)]
+    public class IRequired : Attribute
+    {
+
+    }
+
     public class BaseModel
     {
         /// <summary>
         /// Người tạo
         /// </summary>
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         /// <summary>
         /// Ngày tạo
@@ -19,7 +25,7 @@ namespace FresherMisa2026.Entities
         /// <summary>
         /// Người sửa
         /// </summary>
-        public string ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
 
         /// <summary>
         /// Ngày sửa

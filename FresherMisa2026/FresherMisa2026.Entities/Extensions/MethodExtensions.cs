@@ -75,5 +75,23 @@ namespace FresherMisa2026.Entities.Extensions
 
             return configTable;
         }
+
+        /// <summary>
+        /// Lấy tên khóa chính
+        /// </summary>
+        /// <returns></returns>
+        public static string GetKeyName(this Type type)
+        {
+            var propeties = type.GetProperties();
+            var key = propeties.FirstOrDefault(f => f.IsDefined(typeof(KeyAttribute), true));
+
+            if (key == null)
+            {
+                throw new ArgumentException($"{type.GetTableName()} Không có primarykey");
+            }
+            ;
+
+            return key.Name;
+        }
     }
 }
