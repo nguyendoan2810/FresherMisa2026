@@ -2,6 +2,7 @@
 using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Application.Interfaces.Repositories;
 using FresherMisa2026.Entities.Department;
+using FresherMisa2026.Entities.Employee;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,32 @@ namespace FresherMisa2026.Infrastructure.Repositories
                 {"@DepartmentCode", code }
             };
             return await _dbConnection.QueryFirstOrDefaultAsync<Department>(query, @param, commandType: System.Data.CommandType.Text);
+        }
+
+        /// <summary>
+        /// Repo lấy tổng số nhân viên trong phòng ban theo mã phòng ban
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        /// Created By: nvdoan (18/04/2026)
+        public async Task<int> GetEmployeeCountByDepartmentCodeAsync(string code)
+        {
+            var param = new DynamicParameters();
+            param.Add("@v_DepartmentCode", code);
+            return await _dbConnection.ExecuteScalarAsync<int>("Proc_GetEmployeeCountByDepartmentCode", param, commandType: System.Data.CommandType.StoredProcedure);
+        }
+
+        /// <summary>
+        /// Repo lấy danh sách nhân viên theo mã phòng ban
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        /// Created By: nvdoan (18/04/2026)
+        public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentCodeAsync(string code)
+        {
+            var param = new DynamicParameters();
+            param.Add("@v_DepartmentCode", code);
+            return await _dbConnection.QueryAsync<Employee>("Proc_GetEmployeesByDepartmentCode", param, commandType: System.Data.CommandType.StoredProcedure);
         }
     }
 }
