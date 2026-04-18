@@ -17,7 +17,7 @@ namespace FresherMisa2026.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Danh sách paging
+        /// Danh sách phân trang và lọc
         /// </summary>
         [HttpGet("Paging")]
         public async Task<ActionResult<ServiceResponse>> GetFilterPaging(

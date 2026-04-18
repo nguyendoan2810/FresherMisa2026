@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Application.Interfaces.Repositories;
 using FresherMisa2026.Entities.Employee;
@@ -13,6 +13,12 @@ namespace FresherMisa2026.Infrastructure.Repositories
         {
         }
 
+        /// <summary>
+        /// Repo lấy dữ liệu nhân viên theo mã nhân viên
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        /// Created by: nvdoan (18/04/2026)
         public async Task<Employee> GetEmployeeByCode(string code)
         {
             string query = SQLExtension.GetQuery("Employee.GetByCode");
@@ -23,6 +29,12 @@ namespace FresherMisa2026.Infrastructure.Repositories
             return await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
         }
 
+        /// <summary>
+        /// Repo lấy danh sách nhân viên theo phòng ban
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <returns></returns>
+        /// Created by: nvdoan (18/04/2026)
         public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentId(Guid departmentId)
         {
             string query = SQLExtension.GetQuery("Employee.GetByDepartmentId");
@@ -33,6 +45,12 @@ namespace FresherMisa2026.Infrastructure.Repositories
             return await _dbConnection.QueryAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
         }
 
+        /// <summary>
+        /// Repo lấy danh sách nhân viên theo vị trí công việc
+        /// </summary>
+        /// <param name="positionId"></param>
+        /// <returns></returns>
+        /// Created by: nvdoan (18/04/2026)
         public async Task<IEnumerable<Employee>> GetEmployeesByPositionId(Guid positionId)
         {
             string query = SQLExtension.GetQuery("Employee.GetByPositionId");
