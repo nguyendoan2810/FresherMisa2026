@@ -39,7 +39,7 @@ namespace FresherMisa2026.Application.Services
         protected override async Task<bool> ValidateBeforeDeleteAsync(Guid entityId)
         {
             //1. Validate còn nhân viên trong phòng ban không
-            bool hasEmployee = true;
+            bool hasEmployee = false;
 
             return !hasEmployee;
         }

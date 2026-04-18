@@ -200,6 +200,18 @@ namespace FresherMisa2026.Infrastructure.Repositories
             {
                 try
                 {
+                    // auto sinh Guid tự động thêm vào
+                    var keyName = _modelType.GetKeyName();
+                    var keyProp = entity.GetType().GetProperty(keyName);
+                    if (keyProp != null && keyProp.PropertyType == typeof(Guid))
+                    {
+                        var currentId = (Guid)(keyProp.GetValue(entity) ?? Guid.Empty);
+                        if (currentId == Guid.Empty)
+                        {
+                            keyProp.SetValue(entity, Guid.NewGuid());
+                        }
+                    }
+
                     //1.Duyệt các thuộc tính trên bản ghi và tạo parameters
                     var parameters = MappingDbType(entity);
 
@@ -235,12 +247,12 @@ namespace FresherMisa2026.Infrastructure.Repositories
             {
                 try
                 {
-                    //1. Duyệt các thuộc tính trên customer và tạo parameters
-                    var parameters = MappingDbType(entity);
-
-                    //2. Ánh xạ giá trị id
+                    //1. Ánh xạ giá trị id
                     var keyName = _modelType.GetKeyName();
                     entity.GetType().GetProperty(keyName).SetValue(entity, entityId);
+
+                    //2. Duyệt các thuộc tính trên customer và tạo parameters
+                    var parameters = MappingDbType(entity);
 
                     //3. Kết nối tới CSDL:
                     rowAffects = await _dbConnection.ExecuteAsync($"Proc_Update{_tableName}", param: parameters, transaction: transaction, commandType: CommandType.StoredProcedure);
@@ -308,7 +320,7 @@ namespace FresherMisa2026.Infrastructure.Repositories
             try
             {
                 //1. Duyệt các thuộc tính trên entity và tạo parameters
-                var properties = entity.GetType().GetProperties();
+                var properties = entity.GetType().GetProperties().Where(p => p.DeclaringType != typeof(BaseModel));
 
                 foreach (var property in properties)
                 {
