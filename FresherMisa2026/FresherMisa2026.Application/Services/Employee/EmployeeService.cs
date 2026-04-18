@@ -122,5 +122,22 @@ namespace FresherMisa2026.Application.Services
 
             return errors;
         }
+
+        /// <summary>
+        /// Lọc nhân viên theo các tiêu chí: phòng ban, vị trí công việc, mức lương, giới tính, ngày tuyển dụng
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <param name="positionId"></param>
+        /// <param name="salaryFrom"></param>
+        /// <param name="salaryTo"></param>
+        /// <param name="gender"></param>
+        /// <param name="hireDateFrom"></param>
+        /// <param name="hireDateTo"></param>
+        /// <returns></returns>
+        /// Created by: nvdoan (18/04/2026)
+        public async Task<IEnumerable<Employee>> GetFilterEmployeesAsync(Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo, int? gender, DateTime? hireDateFrom, DateTime? hireDateTo)
+        {
+            return await _employeeRepository.GetFilterEmployeesAsync(departmentId, positionId, salaryFrom, salaryTo, gender, hireDateFrom, hireDateTo);
+        }
     }
 }

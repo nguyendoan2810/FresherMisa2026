@@ -134,40 +134,31 @@ COLLATE utf8mb4_general_ci;
 
 DELIMITER $$
 
+-- Task 2.2. thêm cột HireDate cho bảng employee
+alter table employee
+add column HireDate date null comment "Ngày tuyển" after Salary;
+
 --
 -- Create procedure `Proc_UpdateEmployee`
 --
+DELIMITER $$
 CREATE DEFINER = 'root'@'localhost'
-PROCEDURE Proc_UpdateEmployee (IN v_EmployeeID char(36),
-IN v_EmployeeCode varchar(20),
-IN v_EmployeeName varchar(100),
-IN v_Gender int,
-IN v_DateOfBirth date,
-IN v_PhoneNumber varchar(50),
-IN v_Email varchar(100),
-IN v_Address varchar(255),
-IN v_DepartmentID char(36),
-IN v_PositionID char(36),
-IN v_Salary decimal(18, 4),
-IN v_CreatedDate datetime)
+PROCEDURE Proc_UpdateEmployee (
+  IN v_EmployeeID char(36), IN v_EmployeeCode varchar(20),
+  IN v_EmployeeName varchar(100), IN v_Gender int,
+  IN v_DateOfBirth date, IN v_PhoneNumber varchar(50),
+  IN v_Email varchar(100), IN v_Address varchar(255),
+  IN v_DepartmentID char(36), IN v_PositionID char(36),
+  IN v_Salary decimal(18, 4), IN v_CreatedDate datetime,
+IN v_HireDate date
+)
 BEGIN
   -- Check exists
-  IF NOT EXISTS (SELECT
-        1
-      FROM employee
-      WHERE EmployeeID = v_EmployeeID) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Employee không tồn tại';
+  IF NOT EXISTS (SELECT 1 FROM employee WHERE EmployeeID = v_EmployeeID) THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee không tồn tại';
   END IF;
 
   -- Check duplicate code (except itself)
-  IF EXISTS (SELECT
-        1
-      FROM employee
-      WHERE EmployeeCode = v_EmployeeCode
-      AND EmployeeID <> v_EmployeeID) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'EmployeeCode đã tồn tại';
+  IF EXISTS (SELECT 1 FROM employee WHERE EmployeeCode = v_EmployeeCode AND EmployeeID <> v_EmployeeID) THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'EmployeeCode đã tồn tại';
   END IF;
 
   -- Update
@@ -182,65 +173,48 @@ BEGIN
       DepartmentID = v_DepartmentID,
       PositionID = v_PositionID,
       Salary = v_Salary,
-      CreatedDate = v_CreatedDate
+      CreatedDate = v_CreatedDate,
+      HireDate = v_HireDate
   WHERE EmployeeID = v_EmployeeID;
 END
 $$
+DELIMITER ;
 
 --
 -- Create procedure `Proc_InsertEmployee`
 --
+DELIMITER $$
 CREATE DEFINER = 'root'@'localhost'
-PROCEDURE Proc_InsertEmployee (IN v_EmployeeID char(36),
-IN v_EmployeeCode varchar(20),
-IN v_EmployeeName varchar(100),
-IN v_Gender int,
-IN v_DateOfBirth date,
-IN v_PhoneNumber varchar(50),
-IN v_Email varchar(100),
-IN v_Address varchar(255),
-IN v_DepartmentID char(36),
-IN v_PositionID char(36),
-IN v_Salary decimal(18, 4),
-IN v_CreatedDate datetime)
+PROCEDURE Proc_InsertEmployee (
+  IN v_EmployeeID char(36), IN v_EmployeeCode varchar(20),
+  IN v_EmployeeName varchar(100),IN v_Gender int,
+  IN v_DateOfBirth date, IN v_PhoneNumber varchar(50),
+  IN v_Email varchar(100), IN v_Address varchar(255),
+  IN v_DepartmentID char(36), IN v_PositionID char(36),
+  IN v_Salary decimal(18, 4), IN v_CreatedDate datetime,
+  IN v_HireDate date
+)
 BEGIN
   -- Check duplicate code
-  IF EXISTS (SELECT
-        1
-      FROM employee
-      WHERE EmployeeCode = v_EmployeeCode) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'EmployeeCode đã tồn tại';
+  IF EXISTS (SELECT 1 FROM employee WHERE EmployeeCode = v_EmployeeCode) THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'EmployeeCode đã tồn tại';
   ELSE
-    INSERT INTO employee (EmployeeID,
-    EmployeeCode,
-    EmployeeName,
-    Gender,
-    DateOfBirth,
-    PhoneNumber,
-    Email,
-    Address,
-    DepartmentID,
-    PositionID,
-    Salary,
-    CreatedDate)
-      VALUES (v_EmployeeID, v_EmployeeCode, v_EmployeeName, v_Gender, v_DateOfBirth, v_PhoneNumber, v_Email, v_Address, v_DepartmentID, v_PositionID, v_Salary, v_CreatedDate);
+    INSERT INTO employee (EmployeeID, EmployeeCode, EmployeeName, Gender, DateOfBirth, PhoneNumber, Email, Address, DepartmentID, PositionID, Salary, CreatedDate, HireDate)
+      VALUES (v_EmployeeID, v_EmployeeCode, v_EmployeeName, v_Gender, v_DateOfBirth, v_PhoneNumber, v_Email, v_Address, v_DepartmentID, v_PositionID, v_Salary, v_CreatedDate, v_HireDate);
   END IF;
 END
 $$
+DELIMITER ;
 
 --
 -- Create procedure `Proc_DeleteEmployeeById`
 --
+DELIMITER $$
 CREATE DEFINER = 'root'@'localhost'
 PROCEDURE Proc_DeleteEmployeeById (IN v_EmployeeID char(36))
 BEGIN
-  DELETE
-    FROM Employee
-  WHERE EmployeeID = v_EmployeeID;
+  DELETE FROM Employee WHERE EmployeeID = v_EmployeeID;
 END
 $$
-
 DELIMITER ;
 
 --
@@ -860,6 +834,15 @@ INSERT INTO employee VALUES
 ('e0000001-0000-0000-0000-000000000013', 'EMP013', 'Trịnh Hà My', 0, '1997-09-09', '0912000002', 'my.trinh@misa.com', 'HCM', '550e8400-e29b-41d4-a716-446655440002', '22222222-2222-2222-2222-222222222222', 15500000.0000, '2026-04-15 09:29:18'),
 ('e0000001-0000-0000-0000-000000000014', 'EMP014', 'Đỗ Minh Tuấn', 1, '1994-07-07', '0912000003', 'tuan.do@misa.com', 'HCM', '550e8400-e29b-41d4-a716-446655440002', '11111111-1111-1111-1111-111111111111', 19000000.0000, '2026-04-15 09:29:18'),
 ('e0000001-0000-0000-0000-000000000015', 'EMP015', 'Phạm Thị Linh', 0, '1995-03-03', '0912000004', 'linh.pham@misa.com', 'Đà Nẵng', '550e8400-e29b-41d4-a716-446655440002', '22222222-2222-2222-2222-222222222222', 16000000.0000, '2026-04-15 09:29:18');
+
+-- 1. Tạm tắt hàng rào bảo vệ Safe Mode
+SET SQL_SAFE_UPDATES = 0;
+-- 2. Tạo ngày thàng năm ngẫu nhiên cho cột HireDate
+UPDATE employee 
+SET HireDate = DATE_ADD('2024-01-01', INTERVAL FLOOR(RAND() * 730) DAY) 
+WHERE HireDate IS NULL;
+-- 3. Bật rào bảo vệ an toàn lên lại như cũ
+SET SQL_SAFE_UPDATES = 1;
 
 -- 
 -- Dumping data for table department

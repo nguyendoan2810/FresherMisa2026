@@ -60,5 +60,30 @@ namespace FresherMisa2026.Infrastructure.Repositories
             };
             return await _dbConnection.QueryAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
         }
+
+        /// <summary>
+        /// Lọc nhân viên theo các tiêu chí: phòng ban, vị trí công việc, mức lương, giới tính, ngày tuyển dụng
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <param name="positionId"></param>
+        /// <param name="salaryFrom"></param>
+        /// <param name="salaryTo"></param>
+        /// <param name="gender"></param>
+        /// <param name="hireDateFrom"></param>
+        /// <param name="hireDateTo"></param>
+        /// <returns></returns>
+        /// Created by: nvdoan (18/04/2026)
+        public async Task<IEnumerable<Employee>> GetFilterEmployeesAsync(Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo, int? gender, DateTime? hireDateFrom, DateTime? hireDateTo)
+        {
+            var param = new DynamicParameters();
+            param.Add("@v_DepartmentID", departmentId);
+            param.Add("@v_PositionID", positionId);
+            param.Add("@v_SalaryFrom", salaryFrom);
+            param.Add("@v_SalaryTo", salaryTo);
+            param.Add("@v_Gender", gender);
+            param.Add("@v_HireDateFrom", hireDateFrom);
+            param.Add("@v_HireDateTo", hireDateTo);
+            return await _dbConnection.QueryAsync<Employee>("Proc_GetFilterEmployees", param, commandType: System.Data.CommandType.StoredProcedure);
+        }
     }
 }

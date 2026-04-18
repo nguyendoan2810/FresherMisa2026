@@ -63,5 +63,35 @@ namespace FresherMisa2026.WebAPI.Controllers
 
             return response;
         }
+
+        /// <summary>
+        /// API lọc nhân viên theo các tiêu chí: phòng ban, vị trí công việc, mức lương, giới tính, ngày tuyển dụng
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <param name="positionId"></param>
+        /// <param name="salaryFrom"></param>
+        /// <param name="salaryTo"></param>
+        /// <param name="gender"></param>
+        /// <param name="hireDateFrom"></param>
+        /// <param name="hireDateTo"></param>
+        /// <returns></returns>
+        /// Created by: nvdoan (18/04/2026)
+        [HttpGet("Filter")]
+        public async Task<ActionResult<ServiceResponse>> GetFilterEmployee(
+            [FromQuery] Guid? departmentId,
+            [FromQuery] Guid? positionId,
+            [FromQuery] decimal? salaryFrom,
+            [FromQuery] decimal? salaryTo,
+            [FromQuery] int? gender,
+            [FromQuery] DateTime? hireDateFrom,
+            [FromQuery] DateTime? hireDateTo)
+        {
+            var response = new ServiceResponse();
+            response.Data = await _employeeService.GetFilterEmployeesAsync(departmentId, positionId, salaryFrom, salaryTo, gender, hireDateFrom, hireDateTo);
+            response.IsSuccess = true;
+            response.Code = 200;
+
+            return Ok(response);
+        }
     }
 }
