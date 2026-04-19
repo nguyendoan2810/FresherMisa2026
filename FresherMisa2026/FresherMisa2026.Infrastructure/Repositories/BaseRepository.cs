@@ -217,6 +217,12 @@ namespace FresherMisa2026.Infrastructure.Repositories
                         _cache.Remove($"{_tableName}_Action_GetAll");
                     }
                 }
+                catch (MySqlException ex) when (ex.Number == 1062)
+                {
+                    transaction.Rollback();
+                    string msg = _tableName.ToLower() == "employee" ? "Mã nhân viên đã tồn tại" : "Mã đã tồn tại trong hệ thống";
+                    throw new ValidateException(msg);
+                }
                 catch
                 {
                     transaction.Rollback();
