@@ -2,6 +2,7 @@
 using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Application.Interfaces.Repositories;
 using FresherMisa2026.Entities.Employee;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ namespace FresherMisa2026.Infrastructure.Repositories
 {
     public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     {
-        public EmployeeRepository(IConfiguration configuration) : base(configuration)
+        public EmployeeRepository(IConfiguration configuration, IMemoryCache cache) : base(configuration, cache)
         {
         }
 
@@ -26,7 +27,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
             {
                 {"@EmployeeCode", code }
             };
-            return await _dbConnection.QueryFirstOrDefaultAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
+            using var connection = CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
         }
 
         /// <summary>
@@ -42,7 +44,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
             {
                 {"@DepartmentID", departmentId }
             };
-            return await _dbConnection.QueryAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
         }
 
         /// <summary>
@@ -58,7 +61,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
             {
                 {"@PositionID", positionId }
             };
-            return await _dbConnection.QueryAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Employee>(query, param, commandType: System.Data.CommandType.Text);
         }
 
         /// <summary>
@@ -83,7 +87,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
             param.Add("@v_Gender", gender);
             param.Add("@v_HireDateFrom", hireDateFrom);
             param.Add("@v_HireDateTo", hireDateTo);
-            return await _dbConnection.QueryAsync<Employee>("Proc_GetFilterEmployees", param, commandType: System.Data.CommandType.StoredProcedure);
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Employee>("Proc_GetFilterEmployees", param, commandType: System.Data.CommandType.StoredProcedure);
         }
     }
 }

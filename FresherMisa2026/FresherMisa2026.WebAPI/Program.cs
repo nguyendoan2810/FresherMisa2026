@@ -1,4 +1,4 @@
-using FresherMisa2026.Application;
+﻿using FresherMisa2026.Application;
 using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Infrastructure;
 using FresherMisa2026.WebAPI.Middlewares;
@@ -17,6 +17,9 @@ builder.Services.AddSwaggerGen();
 //DI
 builder.Services.AddApplicationDI();
 builder.Services.AddInfrastructure();
+
+// Đăng ký dịch vụ IMemoryCache
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

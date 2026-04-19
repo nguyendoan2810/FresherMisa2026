@@ -218,6 +218,37 @@ $$
 DELIMITER ;
 
 --
+-- Create procedure `Proc_GetFilterEmployees`
+--
+drop procedure if exists Proc_GetFilterEmployees;
+
+DELIMITER $$
+CREATE DEFINER = 'root'@'localhost' PROCEDURE Proc_GetFilterEmployees (
+    IN v_DepartmentID char(36),
+    IN v_PositionID char(36),
+    IN v_SalaryFrom decimal(18,4),
+    IN v_SalaryTo decimal(18,4),
+    IN v_Gender int,
+    IN v_HireDateFrom date,
+    IN v_HireDateTo date
+)
+BEGIN
+    SELECT * 
+    FROM employee
+    WHERE 
+        -- Nếu tham số là rỗng (hoặc ID toàn số 0 mặc định của Guid) thì lờ đi, không lọc cột đó
+        (v_DepartmentID IS NULL OR v_DepartmentID = '' OR v_DepartmentID = '00000000-0000-0000-0000-000000000000' OR DepartmentID = v_DepartmentID)
+        AND (v_PositionID IS NULL OR v_PositionID = '' OR v_PositionID = '00000000-0000-0000-0000-000000000000' OR PositionID = v_PositionID)
+        AND (v_SalaryFrom IS NULL OR Salary >= v_SalaryFrom)
+        AND (v_SalaryTo IS NULL OR Salary <= v_SalaryTo)
+        AND (v_Gender IS NULL OR Gender = v_Gender)
+        AND (v_HireDateFrom IS NULL OR HireDate >= v_HireDateFrom)
+        AND (v_HireDateTo IS NULL OR HireDate <= v_HireDateTo)
+    ORDER BY HireDate DESC; -- Sap xếp ngày tuyển giảm dần
+END $$
+DELIMITER ;
+
+--
 -- Create table `department`
 --
 CREATE TABLE department (
@@ -316,6 +347,33 @@ BEGIN
 END
 $$
 
+DELIMITER ;
+
+-- 1. Hàm đếm nhân viên thuộc phòng ban
+DROP PROCEDURE IF EXISTS Proc_GetEmployeeCountByDepartmentCode;
+DELIMITER $$
+CREATE DEFINER = 'root'@'localhost' PROCEDURE Proc_GetEmployeeCountByDepartmentCode (
+    IN v_DepartmentCode varchar(20)
+)
+BEGIN
+    SELECT COUNT(e.EmployeeID)
+    FROM employee e
+    INNER JOIN department d ON e.DepartmentID = d.DepartmentID
+    WHERE d.DepartmentCode = v_DepartmentCode;
+END $$
+DELIMITER ;
+-- 2. Hàm gom danh sách nhân viên thuộc phòng ban
+DROP PROCEDURE IF EXISTS Proc_GetEmployeesByDepartmentCode;
+DELIMITER $$
+CREATE DEFINER = 'root'@'localhost' PROCEDURE Proc_GetEmployeesByDepartmentCode (
+    IN v_DepartmentCode varchar(20)
+)
+BEGIN
+    SELECT e.* 
+    FROM employee e
+    INNER JOIN department d ON e.DepartmentID = d.DepartmentID
+    WHERE d.DepartmentCode = v_DepartmentCode;
+END $$
 DELIMITER ;
 
 --

@@ -3,6 +3,7 @@ using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Application.Interfaces.Repositories;
 using FresherMisa2026.Entities.Department;
 using FresherMisa2026.Entities.Employee;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace FresherMisa2026.Infrastructure.Repositories
     /// Created By: dvhai (09/04/2026)
     public class DepartmentRepository : BaseRepository<Department>, IDepartmentRepository
     {
-        public DepartmentRepository(IConfiguration configuration) : base(configuration)
+        public DepartmentRepository(IConfiguration configuration, IMemoryCache cache) : base(configuration, cache)
         {
 
         }
@@ -34,7 +35,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
             {
                 {"@DepartmentCode", code }
             };
-            return await _dbConnection.QueryFirstOrDefaultAsync<Department>(query, @param, commandType: System.Data.CommandType.Text);
+            using var connection = CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<Department>(query, @param, commandType: System.Data.CommandType.Text);
         }
 
         /// <summary>
@@ -47,7 +49,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
         {
             var param = new DynamicParameters();
             param.Add("@v_DepartmentCode", code);
-            return await _dbConnection.ExecuteScalarAsync<int>("Proc_GetEmployeeCountByDepartmentCode", param, commandType: System.Data.CommandType.StoredProcedure);
+            using var connection = CreateConnection();
+            return await connection.ExecuteScalarAsync<int>("Proc_GetEmployeeCountByDepartmentCode", param, commandType: System.Data.CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -60,7 +63,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
         {
             var param = new DynamicParameters();
             param.Add("@v_DepartmentCode", code);
-            return await _dbConnection.QueryAsync<Employee>("Proc_GetEmployeesByDepartmentCode", param, commandType: System.Data.CommandType.StoredProcedure);
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Employee>("Proc_GetEmployeesByDepartmentCode", param, commandType: System.Data.CommandType.StoredProcedure);
         }
     }
 }
