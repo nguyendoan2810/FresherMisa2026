@@ -135,9 +135,9 @@ namespace FresherMisa2026.Application.Services
         /// <param name="hireDateTo"></param>
         /// <returns></returns>
         /// Created by: nvdoan (18/04/2026)
-        public async Task<IEnumerable<Employee>> GetFilterEmployeesAsync(Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo, int? gender, DateTime? hireDateFrom, DateTime? hireDateTo)
+        public async Task<PagingResponse<Employee>> GetFilterEmployeesAsync(int pageSize, int pageIndex, Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo, int? gender, DateTime? hireDateFrom, DateTime? hireDateTo)
         {
-            return await _employeeRepository.GetFilterEmployeesAsync(departmentId, positionId, salaryFrom, salaryTo, gender, hireDateFrom, hireDateTo);
+            return await _employeeRepository.GetFilterEmployeesAsync(pageSize, pageIndex, departmentId, positionId, salaryFrom, salaryTo, gender, hireDateFrom, hireDateTo);
         }
     }
 }

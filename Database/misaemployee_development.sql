@@ -138,6 +138,9 @@ DELIMITER $$
 alter table employee
 add column HireDate date null comment "Ngày tuyển" after Salary;
 
+-- Task 3.2. Đánh index cho cột EmployeeCode
+alter table employee add unique index UQ_EmployeeCode (EmployeeCode);
+
 --
 -- Create procedure `Proc_UpdateEmployee`
 --
@@ -217,7 +220,7 @@ END
 $$
 DELIMITER ;
 
---
+-- task 2.2
 -- Create procedure `Proc_GetFilterEmployees`
 --
 drop procedure if exists Proc_GetFilterEmployees;
@@ -245,6 +248,54 @@ BEGIN
         AND (v_HireDateFrom IS NULL OR HireDate >= v_HireDateFrom)
         AND (v_HireDateTo IS NULL OR HireDate <= v_HireDateTo)
     ORDER BY HireDate DESC; -- Sap xếp ngày tuyển giảm dần
+END $$
+DELIMITER ;
+
+-- task 2.3
+-- Created procedure Proc_GetFilterEmployeesPaging
+--
+DROP PROCEDURE IF EXISTS Proc_GetFilterEmployeesPaging;
+DELIMITER $$
+CREATE DEFINER = 'root'@'localhost' PROCEDURE Proc_GetFilterEmployeesPaging (
+    IN v_pageSize int,
+    IN v_pageIndex int,
+    IN v_DepartmentID char(36),
+    IN v_PositionID char(36),
+    IN v_SalaryFrom decimal(18,4),
+    IN v_SalaryTo decimal(18,4),
+    IN v_Gender int,
+    IN v_HireDateFrom date,
+    IN v_HireDateTo date
+)
+BEGIN
+    -- Tính toán điểm Cắt Trang (Offset)
+    DECLARE v_Offset int;
+    IF v_pageIndex < 1 THEN SET v_pageIndex = 1; END IF;
+    SET v_Offset = (v_pageIndex - 1) * v_pageSize;
+    -- 1. TRẢ VỀ LUỒNG 1: Data List (Cắt khúc Limit - Offset đúng như phân trang)
+    SELECT * 
+    FROM employee
+    WHERE 
+        (v_DepartmentID IS NULL OR v_DepartmentID = '' OR v_DepartmentID = '00000000-0000-0000-0000-000000000000' OR DepartmentID = v_DepartmentID)
+        AND (v_PositionID IS NULL OR v_PositionID = '' OR v_PositionID = '00000000-0000-0000-0000-000000000000' OR PositionID = v_PositionID)
+        AND (v_SalaryFrom IS NULL OR Salary >= v_SalaryFrom)
+        AND (v_SalaryTo IS NULL OR Salary <= v_SalaryTo)
+        AND (v_Gender IS NULL OR Gender = v_Gender)
+        AND (v_HireDateFrom IS NULL OR HireDate >= v_HireDateFrom)
+        AND (v_HireDateTo IS NULL OR HireDate <= v_HireDateTo)
+    ORDER BY HireDate DESC
+    LIMIT v_pageSize OFFSET v_Offset;
+    -- 2. TRẢ VỀ LUỒNG 2: Total (Con số tổng đếm của toàn rổ, không giới hạn Limit)
+    SELECT COUNT(*) 
+    FROM employee
+    WHERE 
+        (v_DepartmentID IS NULL OR v_DepartmentID = '' OR v_DepartmentID = '00000000-0000-0000-0000-000000000000' OR DepartmentID = v_DepartmentID)
+        AND (v_PositionID IS NULL OR v_PositionID = '' OR v_PositionID = '00000000-0000-0000-0000-000000000000' OR PositionID = v_PositionID)
+        AND (v_SalaryFrom IS NULL OR Salary >= v_SalaryFrom)
+        AND (v_SalaryTo IS NULL OR Salary <= v_SalaryTo)
+        AND (v_Gender IS NULL OR Gender = v_Gender)
+        AND (v_HireDateFrom IS NULL OR HireDate >= v_HireDateFrom)
+        AND (v_HireDateTo IS NULL OR HireDate <= v_HireDateTo);
 END $$
 DELIMITER ;
 

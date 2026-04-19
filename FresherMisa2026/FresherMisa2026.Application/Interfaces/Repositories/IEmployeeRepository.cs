@@ -1,4 +1,5 @@
-﻿using FresherMisa2026.Entities.Employee;
+﻿using FresherMisa2026.Entities;
+using FresherMisa2026.Entities.Employee;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +24,7 @@ namespace FresherMisa2026.Application.Interfaces.Repositories
         /// <param name="hireDateTo"></param>
         /// <returns></returns>
         /// Created by: nvdoan (18/04/2026)
-        Task<IEnumerable<Employee>> GetFilterEmployeesAsync(
+        Task<PagingResponse<Employee>> GetFilterEmployeesAsync(int pageSize, int pageIndex,
             Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo,
             int? gender, DateTime? hireDateFrom, DateTime? hireDateTo);
     }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Application.Interfaces.Repositories;
+using FresherMisa2026.Entities;
 using FresherMisa2026.Entities.Employee;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -77,9 +78,11 @@ namespace FresherMisa2026.Infrastructure.Repositories
         /// <param name="hireDateTo"></param>
         /// <returns></returns>
         /// Created by: nvdoan (18/04/2026)
-        public async Task<IEnumerable<Employee>> GetFilterEmployeesAsync(Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo, int? gender, DateTime? hireDateFrom, DateTime? hireDateTo)
+        public async Task<PagingResponse<Employee>> GetFilterEmployeesAsync(int pageSize, int pageIndex, Guid? departmentId, Guid? positionId, decimal? salaryFrom, decimal? salaryTo, int? gender, DateTime? hireDateFrom, DateTime? hireDateTo)
         {
             var param = new DynamicParameters();
+            param.Add("@v_pageSize", pageSize);
+            param.Add("@v_pageIndex", pageIndex);
             param.Add("@v_DepartmentID", departmentId);
             param.Add("@v_PositionID", positionId);
             param.Add("@v_SalaryFrom", salaryFrom);
@@ -87,8 +90,20 @@ namespace FresherMisa2026.Infrastructure.Repositories
             param.Add("@v_Gender", gender);
             param.Add("@v_HireDateFrom", hireDateFrom);
             param.Add("@v_HireDateTo", hireDateTo);
+
             using var connection = CreateConnection();
-            return await connection.QueryAsync<Employee>("Proc_GetFilterEmployees", param, commandType: System.Data.CommandType.StoredProcedure);
+            using var reader = await connection.QueryMultipleAsync("Proc_GetFilterEmployeesPaging", param, commandType: System.Data.CommandType.StoredProcedure);
+
+            var data = (await reader.ReadAsync<Employee>()).ToList();
+            var total = await reader.ReadFirstAsync<long>();
+
+            return new PagingResponse<Employee>
+            {
+                Total = total,
+                PageSize = pageSize,
+                PageIndex = pageIndex,
+                Data = data
+            };
         }
     }
 }

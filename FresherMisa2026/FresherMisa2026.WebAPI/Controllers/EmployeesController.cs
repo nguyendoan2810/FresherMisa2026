@@ -78,16 +78,18 @@ namespace FresherMisa2026.WebAPI.Controllers
         /// Created by: nvdoan (18/04/2026)
         [HttpGet("Filter")]
         public async Task<ActionResult<ServiceResponse>> GetFilterEmployee(
-            [FromQuery] Guid? departmentId,
-            [FromQuery] Guid? positionId,
-            [FromQuery] decimal? salaryFrom,
-            [FromQuery] decimal? salaryTo,
-            [FromQuery] int? gender,
-            [FromQuery] DateTime? hireDateFrom,
-            [FromQuery] DateTime? hireDateTo)
+            [FromQuery] int pageSize = 10,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] Guid? departmentId = null,
+            [FromQuery] Guid? positionId = null,
+            [FromQuery] decimal? salaryFrom = null,
+            [FromQuery] decimal? salaryTo = null,
+            [FromQuery] int? gender = null,
+            [FromQuery] DateTime? hireDateFrom = null,
+            [FromQuery] DateTime? hireDateTo = null)
         {
             var response = new ServiceResponse();
-            response.Data = await _employeeService.GetFilterEmployeesAsync(departmentId, positionId, salaryFrom, salaryTo, gender, hireDateFrom, hireDateTo);
+            response.Data = await _employeeService.GetFilterEmployeesAsync(pageSize, pageIndex, departmentId, positionId, salaryFrom, salaryTo, gender, hireDateFrom, hireDateTo);
             response.IsSuccess = true;
             response.Code = 200;
 
