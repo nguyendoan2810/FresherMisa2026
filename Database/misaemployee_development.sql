@@ -141,6 +141,18 @@ add column HireDate date null comment "Ngày tuyển" after Salary;
 -- Task 3.2. Đánh index cho cột EmployeeCode
 alter table employee add unique index UQ_EmployeeCode (EmployeeCode);
 
+-- Task 3.4. Đánh index cho DepartmentId, PositionId, EmployeeCode, Composite Index cho các truy vấn bình thường
+-- 1. Index độc bản cho Mã Nhân Viên
+-- 2. Index đơn cho DepartmentID (Lọc danh sách theo phòng ban)
+ALTER TABLE employee 
+ADD INDEX idx_DepartmentID (DepartmentID);
+-- 3. Index đơn cho PositionID (Lọc danh sách theo vị trí)
+ALTER TABLE employee 
+ADD INDEX idx_PositionID (PositionID);
+-- 4. Composite Index (Index mảng kép) dành riêng cho Task 2.2 và 3.3 (Filter & Paging)
+ALTER TABLE employee 
+ADD INDEX idx_Employee_Filter_Dept_Pos_HireDate (DepartmentID, PositionID, HireDate);
+
 --
 -- Create procedure `Proc_UpdateEmployee`
 --
