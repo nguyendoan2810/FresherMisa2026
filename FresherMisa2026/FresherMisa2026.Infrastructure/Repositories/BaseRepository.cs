@@ -25,10 +25,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
         public Type _modelType = null;
         protected string _tableName;
 
-        // 1. Ánh xạ Caching 
         protected readonly IMemoryCache _cache;
 
-        // 2. Phương thức Tách Kết Nối linh hoạt (Dùng xong là tự huỷ ngay)
         protected MySqlConnection CreateConnection()
         {
             return new MySqlConnection(_connectionString);
@@ -54,6 +52,7 @@ namespace FresherMisa2026.Infrastructure.Repositories
         /// Created by: nvdoan (10/04/2026)
         public async Task<IEnumerable<BaseModel>> GetEntitiesAsync()
         {
+            // Đặt Cache Key theo tên bảng và hành động để dễ quản lý, hất bỏ khi có thay đổi dữ liệu hoặc sau 5 phút
             var cacheKey = $"{_tableName}_Action_GetAll";
 
             // Nếu trong máy không có sẵn Cache mới lôi đầu thằng DB lên làm
@@ -118,7 +117,8 @@ namespace FresherMisa2026.Infrastructure.Repositories
         {
             var query = new StringBuilder($"select * from {_tableName}");
             var primaryKey = _modelType.GetKeyName();
-            int whereCount = 0;
+            // Đếm số điều kiện where để biết thêm "where" hay "and" cho đúng cú pháp SQL khi có thêm điều kiện IsDeleted = FALSE ở dưới
+            int whereCount = 0; 
 
             if (primaryKey != null)
             {

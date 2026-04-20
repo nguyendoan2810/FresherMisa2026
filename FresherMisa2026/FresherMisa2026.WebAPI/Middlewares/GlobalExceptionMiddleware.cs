@@ -39,8 +39,12 @@ namespace FresherMisa2026.WebAPI.Middlewares
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var response = new ServiceResponse();
+
+            // Thiết lập header trả về là JSON để client có thể hiểu được định dạng dữ liệu trả về
             context.Response.ContentType = "application/json";
 
+            // Nếu lỗi validate dữ liệu đầu vào thì báo lỗi 400,
+            // còn các lỗi khác sẽ báo lỗi Server 500 để khách hàng liên hệ với Misa xử lý
             if (exception is ValidateException)
             {
                 context.Response.StatusCode = 400; // 400 (Bad Request - Lỗi do người dùng)

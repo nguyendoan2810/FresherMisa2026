@@ -5,7 +5,6 @@ using System.Text;
 
 namespace FresherMisa2026.Entities.Extensions
 {
-
     public static class MethodExtensions
     {
         /// <summary>
