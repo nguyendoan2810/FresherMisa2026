@@ -122,7 +122,7 @@ namespace FresherMisa2026.Application.Services
         /// <param name="entity">Thực thể</param>
         /// <returns>Danh sách lỗi validate</returns>
         /// CREATED BY: DVHAI (07/07/2021)
-        private List<ValidationError> Validate(TEntity entity)
+        private List<ValidationError> Validate(TEntity entity, Guid? entityId = null)
         {
             var errors = new List<ValidationError>();
             var properties = GetCachedProperties(entity.GetType());
@@ -141,7 +141,7 @@ namespace FresherMisa2026.Application.Services
             }
 
             //2. Validate tùy chỉnh từng màn hình
-            var customErrors = ValidateCustom(entity);
+            var customErrors = ValidateCustom(entity, entityId);
             errors.AddRange(customErrors);
 
             return errors;
@@ -180,7 +180,7 @@ namespace FresherMisa2026.Application.Services
         /// <param name="entity">Thực thể</param>
         /// <returns>Danh sách lỗi tùy chỉnh</returns>
         /// CREATED BY: DVHAI (07/07/2021)
-        protected virtual List<ValidationError> ValidateCustom(TEntity entity)
+        protected virtual List<ValidationError> ValidateCustom(TEntity entity, Guid? entityId = null)
         {
             return new List<ValidationError>();
         }
@@ -197,7 +197,7 @@ namespace FresherMisa2026.Application.Services
             entity.State = ModelSate.Add;
 
             //1. Validate tất cả các trường nếu được gắn thẻ
-            var errors = Validate(entity);
+            var errors = Validate(entity, null);
 
             //2. Sử lí lỗi tương ứng
             if (errors.Count == 0)
@@ -231,7 +231,7 @@ namespace FresherMisa2026.Application.Services
             entity.State = ModelSate.Update;
 
             //2. Validate tất cả các trường nếu được gắn thẻ
-            var errors = Validate(entity);
+            var errors = Validate(entity, entityId);
             
             if (errors.Count == 0)
             {

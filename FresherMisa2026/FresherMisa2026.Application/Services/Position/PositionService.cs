@@ -29,7 +29,7 @@ namespace FresherMisa2026.Application.Services
             return position;
         }
 
-        protected override List<ValidationError> ValidateCustom(Position position)
+        protected override List<ValidationError> ValidateCustom(Position position, Guid? positionId = null)
         {
             var errors = new List<ValidationError>();
 

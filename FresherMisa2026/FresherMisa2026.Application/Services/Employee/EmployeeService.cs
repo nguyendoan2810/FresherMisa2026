@@ -64,7 +64,7 @@ namespace FresherMisa2026.Application.Services
         /// <param name="employee"></param>
         /// <returns></returns>
         /// Created by: nvdoan (18/04/2026)
-        protected override List<ValidationError> ValidateCustom(Employee employee)
+        protected override List<ValidationError> ValidateCustom(Employee employee, Guid? employeeId = null)
         {
             var errors = new List<ValidationError>();
 
@@ -85,7 +85,7 @@ namespace FresherMisa2026.Application.Services
                 var duplicate = _employeeRepository.GetEmployeeByCode(employee.EmployeeCode).GetAwaiter().GetResult();
 
                 // Nếu tìm thấy một người khác cũng có mã tương tự trong CSDL
-                if (duplicate != null && duplicate.EmployeeID != employee.EmployeeID)
+                if (duplicate != null && duplicate.EmployeeID != employeeId)
                 {
                     errors.Add(new ValidationError("EmployeeCode", "Mã nhân viên đã tồn tại"));
                 }
